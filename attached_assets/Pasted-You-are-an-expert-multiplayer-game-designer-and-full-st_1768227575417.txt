@@ -1,0 +1,233 @@
+You are an expert multiplayer game designer and full-stack web developer.
+Your task is to generate a complete, playable web-based social deduction game inspired by The Cult / The Resistance.
+All mechanics must be implemented exactly as described below.
+
+GAME IDENTITY
+
+Title: The Cult (Web Version)
+Genre: Social deduction / hidden roles
+Platform: Desktop web browser
+Players: 4–10 real players
+
+CORE CONCEPT
+
+Players are secretly divided into two teams:
+
+Village (majority)
+
+Cult (minority)
+
+Players do not know other players’ roles except where explicitly stated.
+
+The game revolves around discussion, deception, leadership, and secret voting.
+
+OBJECTIVES
+
+Village Team Wins if they successfully complete 3 quests.
+
+Cult Team Wins if:
+
+3 quests fail, OR
+
+The Cult correctly identifies the Seer at the end of the game.
+
+ROLES
+Village Roles
+
+Villager
+
+Must always vote to make quests succeed.
+
+Seer
+
+Knows exactly who the Cult members are.
+
+Appears as a normal Villager to others.
+
+Cult Roles
+
+Cultist
+
+Knows who the other Cult members are.
+
+Can choose to secretly fail or allow quests to succeed.
+
+Roles are:
+
+Assigned randomly at game start
+
+Hidden for the entire game
+
+Stored server-side only
+
+GAME STRUCTURE
+
+The game consists of 5 rounds (quests).
+
+Each round follows the same structure.
+
+A different player becomes Leader each round (rotating order).
+
+ROUND FLOW
+1. Leader Selection
+
+Leader rotates clockwise each round.
+
+Leader is publicly known.
+
+2. Team Selection
+
+The Leader selects a specific number of players to go on the quest.
+
+Team size depends on total player count.
+
+Team selection is public.
+
+3. Discussion Phase
+
+Players openly discuss who should or should not be trusted.
+
+No restrictions on chat.
+
+No timers enforced (configurable).
+
+4. Quest Vote (Secret)
+
+Only selected team members vote.
+
+Each selected player secretly chooses:
+
+Success
+
+Fail
+
+Rules:
+
+Village players must vote Success
+
+Cult players may vote Success or Fail
+
+Votes are anonymous.
+
+5. Quest Result
+
+Server counts votes.
+
+If any Fail vote exists:
+
+Quest fails
+
+Otherwise:
+
+Quest succeeds
+
+Only the final result is revealed.
+
+Individual votes are never shown.
+
+WIN CONDITIONS
+
+Village wins immediately upon 3 successful quests.
+
+Cult wins immediately upon 3 failed quests.
+
+If Village completes 3 quests:
+
+Cult gets one final chance to guess who the Seer is.
+
+If correct → Cult wins
+
+If incorrect → Village wins
+
+INFORMATION RULES
+
+Players CAN see:
+
+Quest outcomes
+
+Leader identity
+
+Selected quest team
+
+Round number
+
+Chat messages
+
+Players CANNOT see:
+
+Roles of others
+
+Individual quest votes
+
+Cult decision-making
+
+UI REQUIREMENTS
+
+Must include:
+
+Lobby (room code / URL)
+
+Player list
+
+Role reveal screen (private)
+
+Leader indicator
+
+Team selection interface
+
+Secret voting interface
+
+Quest result display
+
+Chat system
+
+Endgame reveal screen (all roles shown)
+
+NETWORKING REQUIREMENTS
+
+Simple HTTP-based multiplayer OR lightweight real-time solution
+
+Server-authoritative role assignment and voting
+
+No client-side trust for hidden information
+
+SECURITY RULES
+
+Roles must never be sent to non-authorized clients
+
+Votes must be anonymous and tamper-proof
+
+Clients cannot infer hidden roles from API responses
+
+OUTPUT REQUIREMENTS
+
+Generate:
+
+Full frontend code
+
+Backend server code
+
+Clear folder structure
+
+README with setup instructions
+
+Runnable locally
+
+Game must be playable with:
+
+npm install
+npm start
+
+DESIGN GOALS
+
+Encourage lying, bluffing, and deduction
+
+Simple rules, deep psychology
+
+No animations required beyond basic UI
+
+Clear, readable interface
+
+FINAL INSTRUCTION
+
+Generate the complete working implementation of this game now, strictly following the rules above.
