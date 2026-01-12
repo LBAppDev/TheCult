@@ -103,7 +103,8 @@ export function useSelectTeam() {
 export function useVoteQuest() {
   return useMutation({
     mutationFn: async ({ code, vote }: { code: string } & z.infer<typeof CastQuestVoteSchema>) => {
-      const url = buildUrl(api.rooms.voteQuest.path, { code });
+      const playerId = getStoredPlayerId();
+      const url = buildUrl(api.rooms.voteQuest.path, { code }) + `?playerId=${playerId}`;
       const res = await fetch(url, {
         method: api.rooms.voteQuest.method,
         headers: { "Content-Type": "application/json" },

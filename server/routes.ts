@@ -49,14 +49,14 @@ export async function registerRoutes(
   });
 
   app.post(api.rooms.start.path, async (req, res) => {
-    const code = req.params.code;
+    const code = req.params.code.toUpperCase();
     const success = await storage.startGame(code);
     if (!success) return res.status(400).json({ message: "Could not start game" });
     res.json({ success: true });
   });
 
   app.post(api.rooms.selectTeam.path, async (req, res) => {
-    const code = req.params.code;
+    const code = req.params.code.toUpperCase();
     try {
       const input = api.rooms.selectTeam.input.parse(req.body);
       const success = await storage.selectTeam(code, input.playerIds);
@@ -68,16 +68,9 @@ export async function registerRoutes(
   });
 
   app.post(api.rooms.voteQuest.path, async (req, res) => {
-    const code = req.params.code;
+    const code = req.params.code.toUpperCase();
     try {
       const input = api.rooms.voteQuest.input.parse(req.body);
-      // We need playerId from somewhere. In a real app, middleware auth.
-      // Here, we'll assume it's passed in body or query? 
-      // The schema didn't include playerId.
-      // Let's extract from a header or query for now since we didn't add it to schema.
-      // Or we can add it to schema?
-      // Re-reading `shared/routes.ts`: `CastQuestVoteSchema` is `{ vote: boolean }`.
-      // I'll grab playerId from query param `?playerId=...` which is common in simple apps
       const playerId = req.query.playerId as string;
       
       const success = await storage.voteQuest(code, playerId, input.vote);
@@ -89,7 +82,7 @@ export async function registerRoutes(
   });
 
   app.post(api.rooms.guessSeer.path, async (req, res) => {
-    const code = req.params.code;
+    const code = req.params.code.toUpperCase();
     try {
       const input = api.rooms.guessSeer.input.parse(req.body);
       const success = await storage.guessSeer(code, input.seerId);
@@ -101,7 +94,7 @@ export async function registerRoutes(
   });
 
   app.post(api.rooms.chat.path, async (req, res) => {
-    const code = req.params.code;
+    const code = req.params.code.toUpperCase();
     const playerId = req.query.playerId as string;
     try {
       const input = api.rooms.chat.input.parse(req.body);
