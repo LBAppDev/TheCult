@@ -34,7 +34,7 @@ export async function registerRoutes(
   });
 
   app.get(api.rooms.get.path, async (req, res) => {
-    const code = req.params.code;
+    const code = req.params.code.toUpperCase(); // Ensure uppercase matching
     const playerId = req.query.playerId as string;
     
     if (!playerId) {

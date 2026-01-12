@@ -75,7 +75,7 @@ class MemStorage implements IStorage {
         roomCode: code,
         phase: "lobby",
         round: 1,
-        players: [], // Will use the detailed list
+        players: [host], // Add the host immediately to the list
         leaderId: undefined,
         currentTeam: [],
         questResults: [],
