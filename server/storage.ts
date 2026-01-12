@@ -15,14 +15,14 @@ export interface IStorage {
 }
 
 // Helper to sanitize player for client
-function sanitizePlayer(p: Player & { role: PlayerRole | null | undefined }, viewerId: string, viewerRole: PlayerRole | null | undefined): Player {
+function sanitizePlayer(p: Player & { role: PlayerRole | undefined }, viewerId: string, viewerRole: PlayerRole | undefined): Player {
   // Logic:
   // - Self: sees own role.
   // - Cultist: sees other Cultists.
   // - Seer: sees Cultists (as "Cultist" or flagged).
   // - Villager: sees nothing.
   
-  let visibleRole: PlayerRole | null | undefined = null;
+  let visibleRole: PlayerRole | undefined = undefined;
 
   if (p.id === viewerId) {
     visibleRole = p.role;
@@ -32,10 +32,6 @@ function sanitizePlayer(p: Player & { role: PlayerRole | null | undefined }, vie
      // Seer knows they are cultists
      visibleRole = "Cultist";
   }
-  
-  // Everyone sees "Villager" if role is hidden? 
-  // Or simpler: Client receives "null" for role if unknown.
-  // The UI can interpret "null" as "Unknown/Villager".
   
   return {
     ...p,
@@ -47,7 +43,7 @@ class MemStorage implements IStorage {
   // Store full server state including secrets
   private rooms: Map<string, {
     gameState: GameState, // Base state
-    players: (Player & { role: PlayerRole | null | undefined })[], // Full player objects with roles
+    players: (Player & { role: PlayerRole | undefined })[], // Full player objects with roles
     questVotes: Record<string, boolean> // Current round votes
   }>;
 
@@ -62,11 +58,11 @@ class MemStorage implements IStorage {
   async createRoom(hostName: string): Promise<{ code: string, playerId: string }> {
     const code = this.generateCode();
     const playerId = uuidv4();
-    const host: Player & { role: PlayerRole | null } = {
+    const host: Player & { role: PlayerRole | undefined } = {
       id: playerId,
       name: hostName,
       isHost: true,
-      role: null,
+      role: undefined,
       isDead: false
     };
 
@@ -98,11 +94,11 @@ class MemStorage implements IStorage {
     if (room.gameState.phase !== "lobby") throw new Error("Game already started");
 
     const playerId = uuidv4();
-    const player: Player & { role: PlayerRole | null } = {
+    const player: Player & { role: PlayerRole | undefined } = {
       id: playerId,
       name: playerName,
       isHost: false,
-      role: null,
+      role: undefined,
       isDead: false
     };
 

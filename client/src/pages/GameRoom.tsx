@@ -14,11 +14,12 @@ import { GameStatusBoard } from "@/components/GameStatusBoard";
 import { ChatBox } from "@/components/ChatBox";
 import { RoleCard } from "@/components/RoleCard";
 import { Button } from "@/components/ui/button";
-import { Loader2, Copy, Trophy, AlertTriangle, PlayCircle } from "lucide-react";
+import { Loader2, Copy, Trophy, AlertTriangle, PlayCircle, Skull } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { motion, AnimatePresence } from "framer-motion";
 import { PlayerRole } from "@shared/schema";
+import { cn } from "@/lib/utils";
 
 export default function GameRoom() {
   const [, params] = useRoute("/room/:code");
