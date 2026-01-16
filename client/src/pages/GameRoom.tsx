@@ -75,9 +75,24 @@ export default function GameRoom() {
     if (selectedTeam.includes(pid)) {
       setSelectedTeam(prev => prev.filter(id => id !== pid));
     } else {
-      // Hardcoded simplified team sizes for demo, ideally comes from logic based on player count
-      // For now let's just allow unlimited selection up to player count, server validates logic
-      setSelectedTeam(prev => [...prev, pid]);
+      // Game Balance Team Sizes
+      const missionSizes: Record<number, number[]> = {
+        4:  [2, 2, 2, 3, 3],
+        5:  [2, 3, 2, 3, 3],
+        6:  [2, 3, 4, 3, 4],
+        7:  [2, 3, 3, 4, 4],
+        8:  [3, 4, 4, 5, 5],
+        9:  [3, 4, 4, 5, 5],
+        10: [3, 4, 4, 5, 5]
+      };
+
+      const playerCount = gameState?.players.length || 0;
+      const missionIndex = (gameState?.round || 1) - 1;
+      const requiredSize = missionSizes[playerCount]?.[missionIndex] || 2;
+
+      if (selectedTeam.length < requiredSize) {
+        setSelectedTeam(prev => [...prev, pid]);
+      }
     }
   };
 

@@ -174,11 +174,22 @@ class MemStorage implements IStorage {
     const room = this.rooms.get(code);
     if (!room) return false;
 
-    // Validate Team Size based on round and player count
-    // Simplified logic: 
-    // 4-5 players: R1(2), R2(3), R3(2), R4(3), R5(3)
-    // But for MVP, just accept any size if it matches config. 
-    // Let's enforce strictly if possible, or just accept whatever leader picks for flexibility.
+    // Game Balance Team Sizes
+    const missionSizes: Record<number, number[]> = {
+      4:  [2, 2, 2, 3, 3],
+      5:  [2, 3, 2, 3, 3],
+      6:  [2, 3, 4, 3, 4],
+      7:  [2, 3, 3, 4, 4],
+      8:  [3, 4, 4, 5, 5],
+      9:  [3, 4, 4, 5, 5],
+      10: [3, 4, 4, 5, 5]
+    };
+
+    const playerCount = room.players.length;
+    const missionIndex = room.gameState.round - 1;
+    const requiredSize = missionSizes[playerCount]?.[missionIndex] || 2;
+
+    if (playerIds.length !== requiredSize) return false;
     
     room.gameState.currentTeam = playerIds;
     room.gameState.phase = "quest_voting";
@@ -186,7 +197,7 @@ class MemStorage implements IStorage {
     room.gameState.chat.push({ 
       id: uuidv4(), 
       sender: "System", 
-      message: "Team selected! Team members, cast your votes.", 
+      message: `Team selected! (${requiredSize} members needed). Cast your votes.`, 
       timestamp: Date.now(), 
       isSystem: true 
     });
