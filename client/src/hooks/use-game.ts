@@ -135,7 +135,8 @@ export function useSendChat() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ code, message }: { code: string } & z.infer<typeof SendChatSchema>) => {
-      const url = buildUrl(api.rooms.chat.path, { code });
+      const playerId = getStoredPlayerId();
+      const url = buildUrl(api.rooms.chat.path, { code }) + `?playerId=${playerId}`;
       const res = await fetch(url, {
         method: api.rooms.chat.method,
         headers: { "Content-Type": "application/json" },
