@@ -137,10 +137,20 @@ class MemStorage implements IStorage {
     const room = this.rooms.get(code);
     if (!room) return false;
 
+    // Assign Roles
     const playerCount = room.players.length;
     if (playerCount < 4) return false; // Min 4
 
-    // Assign Roles
+    // Reset game state for restart
+    room.gameState.round = 1;
+    room.gameState.failedQuests = 0;
+    room.gameState.succeededQuests = 0;
+    room.gameState.questResults = [];
+    room.gameState.currentTeam = [];
+    room.gameState.lastQuestResult = null;
+    room.gameState.winner = undefined;
+    room.questVotes = {};
+
     let numCultists = 1;
     if (playerCount >= 5) numCultists = 2;
     if (playerCount >= 7) numCultists = 3;

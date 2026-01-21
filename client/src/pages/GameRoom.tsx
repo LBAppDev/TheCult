@@ -193,7 +193,25 @@ export default function GameRoom() {
                        <h3 className="text-xl font-display font-bold">
                          {isLeader ? "Choose your Team" : `Waiting for ${gameState.players.find(p => p.id === gameState.leaderId)?.name}...`}
                        </h3>
-                       {isLeader && <span className="text-sm bg-primary/20 text-primary px-2 py-1 rounded">Select Players</span>}
+                       {(() => {
+                         const missionSizes: Record<number, number[]> = {
+                           4:  [2, 2, 2, 3, 3],
+                           5:  [2, 3, 2, 3, 3],
+                           6:  [2, 3, 4, 3, 4],
+                           7:  [2, 3, 3, 4, 4],
+                           8:  [3, 4, 4, 5, 5],
+                           9:  [3, 4, 4, 5, 5],
+                           10: [3, 4, 4, 5, 5]
+                         };
+                         const playerCount = gameState.players.length;
+                         const missionIndex = gameState.round - 1;
+                         const requiredSize = missionSizes[playerCount]?.[missionIndex] || 2;
+                         return (
+                           <span className="text-sm bg-primary/20 text-primary px-3 py-1 rounded-full font-bold border border-primary/30">
+                             Select {requiredSize} Players ({selectedTeam.length}/{requiredSize})
+                           </span>
+                         );
+                       })()}
                     </div>
 
                     <PlayerList 
@@ -343,7 +361,7 @@ export default function GameRoom() {
                     </h1>
                     <p className="text-xl text-muted-foreground mb-8">The truth has been revealed.</p>
                     
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left mb-8">
                        {gameState.players.map(p => (
                          <div key={p.id} className="flex justify-between items-center p-3 bg-white/5 rounded border border-white/5">
                             <span className="font-bold">{p.name}</span>
@@ -357,9 +375,22 @@ export default function GameRoom() {
                        ))}
                     </div>
 
-                    <Button className="mt-8" variant="secondary" onClick={() => window.location.href = "/"}>
-                      Back to Lobby
-                    </Button>
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                      {isHost && (
+                        <Button 
+                          size="lg"
+                          className="font-bold px-8 shadow-lg shadow-primary/20"
+                          onClick={handleStartGame}
+                          disabled={startGame.isPending}
+                        >
+                          {startGame.isPending ? <Loader2 className="animate-spin mr-2" /> : <PlayCircle className="mr-2" />}
+                          Play Again
+                        </Button>
+                      )}
+                      <Button variant="outline" size="lg" onClick={() => window.location.href = "/"}>
+                        Exit to Main Menu
+                      </Button>
+                    </div>
                   </motion.div>
                 )}
 
