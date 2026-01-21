@@ -96,6 +96,25 @@ export const api = {
         responses: { 
           200: z.object({ success: z.boolean() }) 
         }
+    },
+    kick: {
+      method: "POST" as const,
+      path: "/api/rooms/:code/kick",
+      input: z.object({ targetId: z.string() }),
+      responses: {
+        200: z.object({ success: z.boolean() }),
+        400: errorSchemas.validation,
+        403: errorSchemas.internal
+      }
+    },
+    leave: {
+      method: "POST" as const,
+      path: "/api/rooms/:code/leave",
+      input: z.object({}),
+      responses: {
+        200: z.object({ success: z.boolean() }),
+        400: errorSchemas.validation
+      }
     }
   }
 };

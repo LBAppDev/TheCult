@@ -12,6 +12,8 @@ export interface IStorage {
   voteQuest(code: string, playerId: string, vote: boolean): Promise<boolean>;
   guessSeer(code: string, seerId: string): Promise<boolean>;
   addChatMessage(code: string, sender: string, message: string): Promise<boolean>;
+  kickPlayer(code: string, hostId: string, targetId: string): Promise<boolean>;
+  leaveRoom(code: string, playerId: string): Promise<boolean>;
 }
 
 // Helper to sanitize player for client
@@ -306,6 +308,61 @@ class MemStorage implements IStorage {
     
     // Keep chat log reasonable
     if (room.gameState.chat.length > 50) room.gameState.chat.shift();
+    return true;
+  }
+
+  async kickPlayer(code: string, hostId: string, targetId: string): Promise<boolean> {
+    const room = this.rooms.get(code);
+    if (!room) return false;
+
+    const host = room.players.find(p => p.id === hostId);
+    if (!host || !host.isHost) return false;
+    if (room.gameState.phase !== "lobby") return false;
+
+    const targetIdx = room.players.findIndex(p => p.id === targetId);
+    if (targetIdx === -1) return false;
+
+    const target = room.players[targetIdx];
+    room.players.splice(targetIdx, 1);
+    room.gameState.chat.push({
+      id: uuidv4(),
+      sender: "System",
+      message: `${target.name} was kicked from the room.`,
+      timestamp: Date.now(),
+      isSystem: true
+    });
+
+    return true;
+  }
+
+  async leaveRoom(code: string, playerId: string): Promise<boolean> {
+    const room = this.rooms.get(code);
+    if (!room) return false;
+
+    const playerIdx = room.players.findIndex(p => p.id === playerId);
+    if (playerIdx === -1) return false;
+
+    const player = room.players[playerIdx];
+    room.players.splice(playerIdx, 1);
+
+    // If host leaves, assign new host if players remain
+    if (player.isHost && room.players.length > 0) {
+      room.players[0].isHost = true;
+    }
+
+    room.gameState.chat.push({
+      id: uuidv4(),
+      sender: "System",
+      message: `${player.name} left the room.`,
+      timestamp: Date.now(),
+      isSystem: true
+    });
+
+    // If room empty, delete it
+    if (room.players.length === 0) {
+      this.rooms.delete(code);
+    }
+
     return true;
   }
 }

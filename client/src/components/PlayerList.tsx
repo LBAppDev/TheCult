@@ -1,6 +1,7 @@
 import { Player } from "@shared/schema";
-import { Crown, Shield, Skull, Eye } from "lucide-react";
+import { Crown, Shield, Skull, Eye, XCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 interface PlayerListProps {
   players: Player[];
@@ -10,6 +11,8 @@ interface PlayerListProps {
   selectedIds?: string[];
   maxSelection?: number;
   selectable?: boolean;
+  canKick?: boolean;
+  onKick?: (playerId: string) => void;
 }
 
 export function PlayerList({ 
@@ -18,7 +21,9 @@ export function PlayerList({
   currentPlayerId, 
   onSelect, 
   selectedIds = [], 
-  selectable = false 
+  selectable = false,
+  canKick = false,
+  onKick
 }: PlayerListProps) {
   
   const handleSelect = (id: string) => {
@@ -41,7 +46,7 @@ export function PlayerList({
             key={player.id}
             onClick={() => handleSelect(player.id)}
             className={cn(
-              "relative p-4 rounded-xl border transition-all duration-200 flex items-center gap-3",
+              "relative p-4 rounded-xl border transition-all duration-200 flex items-center gap-3 group",
               selectable ? "cursor-pointer hover:border-primary/50 hover:bg-primary/5" : "cursor-default",
               isSelected 
                 ? "bg-primary/20 border-primary shadow-[0_0_15px_-5px_rgba(233,69,96,0.5)]" 
@@ -83,6 +88,20 @@ export function PlayerList({
               </div>
             </div>
             
+            {canKick && !isMe && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-red-500 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500/10"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onKick?.(player.id);
+                }}
+              >
+                <XCircle className="w-4 h-4" />
+              </Button>
+            )}
+
             {selectable && (
               <div className={cn(
                 "w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors",

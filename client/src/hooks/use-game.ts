@@ -151,3 +151,38 @@ export function useSendChat() {
     }
   });
 }
+
+export function useKickPlayer() {
+  return useMutation({
+    mutationFn: async ({ code, targetId }: { code: string, targetId: string }) => {
+      const playerId = getStoredPlayerId();
+      const url = buildUrl(api.rooms.kick.path, { code }) + `?playerId=${playerId}`;
+      const res = await fetch(url, {
+        method: api.rooms.kick.method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ targetId }),
+      });
+      if (!res.ok) throw new Error("Failed to kick player");
+      return api.rooms.kick.responses[200].parse(await res.json());
+    }
+  });
+}
+
+export function useLeaveRoom() {
+  return useMutation({
+    mutationFn: async ({ code }: { code: string }) => {
+      const playerId = getStoredPlayerId();
+      const url = buildUrl(api.rooms.leave.path, { code }) + `?playerId=${playerId}`;
+      const res = await fetch(url, {
+        method: api.rooms.leave.method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({}),
+      });
+      if (!res.ok) throw new Error("Failed to leave room");
+      return api.rooms.leave.responses[200].parse(await res.json());
+    },
+    onSuccess: () => {
+      window.location.href = "/";
+    }
+  });
+}

@@ -7,14 +7,16 @@ import {
   useSelectTeam, 
   useVoteQuest, 
   useGuessSeer, 
-  useSendChat 
+  useSendChat,
+  useKickPlayer,
+  useLeaveRoom
 } from "@/hooks/use-game";
 import { PlayerList } from "@/components/PlayerList";
 import { GameStatusBoard } from "@/components/GameStatusBoard";
 import { ChatBox } from "@/components/ChatBox";
 import { RoleCard } from "@/components/RoleCard";
 import { Button } from "@/components/ui/button";
-import { Loader2, Copy, Trophy, AlertTriangle, PlayCircle, Skull } from "lucide-react";
+import { Loader2, Copy, Trophy, AlertTriangle, PlayCircle, Skull, LogOut } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { motion, AnimatePresence } from "framer-motion";
@@ -35,6 +37,8 @@ export default function GameRoom() {
   const voteQuest = useVoteQuest();
   const guessSeer = useGuessSeer();
   const sendChat = useSendChat();
+  const kickPlayer = useKickPlayer();
+  const leaveRoom = useLeaveRoom();
 
   // Local State
   const [isRoleRevealed, setIsRoleRevealed] = useState(false);
@@ -69,6 +73,14 @@ export default function GameRoom() {
     if (seerGuessId) {
       guessSeer.mutate({ code, seerId: seerGuessId });
     }
+  };
+
+  const handleKick = (targetId: string) => {
+    kickPlayer.mutate({ code, targetId });
+  };
+
+  const handleLeave = () => {
+    leaveRoom.mutate({ code });
   };
 
   const toggleTeamSelection = (pid: string) => {
@@ -117,8 +129,19 @@ export default function GameRoom() {
             <Copy className="w-3 h-3 text-muted-foreground" />
           </div>
         </div>
-        <div className="text-sm text-muted-foreground font-medium">
-          {me?.name}
+        <div className="flex items-center gap-4">
+          <div className="text-sm text-muted-foreground font-medium hidden sm:block">
+            {me?.name}
+          </div>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="text-red-400 hover:text-red-300 hover:bg-red-500/10 gap-2"
+            onClick={handleLeave}
+          >
+            <LogOut className="w-4 h-4" />
+            <span className="hidden sm:inline">Leave</span>
+          </Button>
         </div>
       </header>
 
@@ -138,6 +161,8 @@ export default function GameRoom() {
                 players={gameState.players} 
                 currentPlayerId={playerId}
                 leaderId={gameState.leaderId}
+                canKick={isHost}
+                onKick={handleKick}
               />
             </div>
 

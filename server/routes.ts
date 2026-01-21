@@ -113,5 +113,30 @@ export async function registerRoutes(
     }
   });
 
+  app.post(api.rooms.kick.path, async (req, res) => {
+    const code = req.params.code.toUpperCase();
+    const hostId = req.query.playerId as string;
+    try {
+      const { targetId } = req.body;
+      const success = await storage.kickPlayer(code, hostId, targetId);
+      if (!success) return res.status(400).json({ message: "Could not kick player" });
+      res.json({ success: true });
+    } catch (e) {
+      res.status(400).json({ message: "Invalid input" });
+    }
+  });
+
+  app.post(api.rooms.leave.path, async (req, res) => {
+    const code = req.params.code.toUpperCase();
+    const playerId = req.query.playerId as string;
+    try {
+      const success = await storage.leaveRoom(code, playerId);
+      if (!success) return res.status(400).json({ message: "Could not leave room" });
+      res.json({ success: true });
+    } catch (e) {
+      res.status(400).json({ message: "Invalid input" });
+    }
+  });
+
   return httpServer;
 }
