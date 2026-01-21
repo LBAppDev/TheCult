@@ -124,7 +124,12 @@ class MemStorage implements IStorage {
     if (!viewer) return undefined; // Or throw
 
     // Sanitize players list
-    const sanitizedPlayers = room.players.map(p => sanitizePlayer(p, playerId, viewer.role));
+    // If game is over, reveal all roles
+    const revealAll = room.gameState.phase === "game_end";
+    const sanitizedPlayers = room.players.map(p => {
+      if (revealAll) return p;
+      return sanitizePlayer(p, playerId, viewer.role);
+    });
 
     return {
       ...room.gameState,
