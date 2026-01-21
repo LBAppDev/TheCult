@@ -46,6 +46,7 @@ export const GameState = z.object({
   succeededQuests: z.number(),
   winner: z.enum(["Village", "Cult"]).optional(),
   chat: z.array(ChatMessage),
+  phaseEndTime: z.number().optional(), // Timestamp when phase ends
   lastQuestResult: z.object({
       success: z.boolean(),
       failVotes: z.number(),

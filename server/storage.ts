@@ -120,6 +120,20 @@ class MemStorage implements IStorage {
     const room = this.rooms.get(code);
     if (!room) return undefined;
 
+    // Auto-process voting timeout
+    if (room.gameState.phase === "quest_voting" && room.gameState.phaseEndTime && Date.now() > room.gameState.phaseEndTime) {
+      // Force end voting: missing votes become "Success" (Villager-favored fallback)
+      const members = room.gameState.currentTeam;
+      for (const mid of members) {
+        if (room.questVotes[mid] === undefined) {
+          room.questVotes[mid] = true; 
+        }
+      }
+      // Process the result by calling voteQuest with an internal flag or just re-triggering logic
+      // Simplest: just run the processing logic here if all "voted"
+      await this.processQuestResult(code);
+    }
+
     const viewer = room.players.find(p => p.id === playerId);
     if (!viewer) return undefined; // Or throw
 
@@ -210,6 +224,7 @@ class MemStorage implements IStorage {
     
     room.gameState.currentTeam = playerIds;
     room.gameState.phase = "quest_voting";
+    room.gameState.phaseEndTime = Date.now() + 15000; // 15 seconds from now
     room.questVotes = {}; // Reset votes
     room.gameState.chat.push({ 
       id: uuidv4(), 
@@ -234,55 +249,62 @@ class MemStorage implements IStorage {
     // Check if all voted
     const votesCast = Object.keys(room.questVotes).length;
     if (votesCast >= room.gameState.currentTeam.length) {
-      // Process Result
-      const votes = Object.values(room.questVotes);
-      const failVotes = votes.filter(v => !v).length;
-      const success = failVotes === 0; // Strict fail
-
-      room.gameState.questResults.push(success);
-      if (success) room.gameState.succeededQuests++;
-      else room.gameState.failedQuests++;
-
-      room.gameState.lastQuestResult = {
-        success,
-        failVotes,
-        successVotes: votes.length - failVotes
-      };
-
-      room.gameState.chat.push({ 
-        id: uuidv4(), 
-        sender: "System", 
-        message: `Quest ${success ? "SUCCEEDED" : "FAILED"}! (${failVotes} fails)`, 
-        timestamp: Date.now(), 
-        isSystem: true 
-      });
-
-      // Check Win Condition
-      if (room.gameState.failedQuests >= 3) {
-        room.gameState.winner = "Cult";
-        room.gameState.phase = "game_end";
-      } else if (room.gameState.succeededQuests >= 3) {
-        room.gameState.phase = "seer_guess"; // Cult chance
-        room.gameState.chat.push({ 
-            id: uuidv4(), 
-            sender: "System", 
-            message: "Village has 3 successes! Cult must identify the Seer to win.", 
-            timestamp: Date.now(), 
-            isSystem: true 
-        });
-      } else {
-        // Next Round
-        room.gameState.round++;
-        room.gameState.phase = "team_selection";
-        
-        // Rotate Leader
-        const currentLeaderIdx = room.players.findIndex(p => p.id === room.gameState.leaderId);
-        const nextLeaderIdx = (currentLeaderIdx + 1) % room.players.length;
-        room.gameState.leaderId = room.players[nextLeaderIdx].id;
-      }
+      await this.processQuestResult(code);
     }
 
     return true;
+  }
+
+  private async processQuestResult(code: string): Promise<void> {
+    const room = this.rooms.get(code);
+    if (!room) return;
+
+    room.gameState.phaseEndTime = undefined;
+    const votes = Object.values(room.questVotes);
+    const failVotes = votes.filter(v => !v).length;
+    const success = failVotes === 0; // Strict fail
+
+    room.gameState.questResults.push(success);
+    if (success) room.gameState.succeededQuests++;
+    else room.gameState.failedQuests++;
+
+    room.gameState.lastQuestResult = {
+      success,
+      failVotes,
+      successVotes: votes.length - failVotes
+    };
+
+    room.gameState.chat.push({ 
+      id: uuidv4(), 
+      sender: "System", 
+      message: `Quest ${success ? "SUCCEEDED" : "FAILED"}! (${failVotes} fails)`, 
+      timestamp: Date.now(), 
+      isSystem: true 
+    });
+
+    // Check Win Condition
+    if (room.gameState.failedQuests >= 3) {
+      room.gameState.winner = "Cult";
+      room.gameState.phase = "game_end";
+    } else if (room.gameState.succeededQuests >= 3) {
+      room.gameState.phase = "seer_guess"; // Cult chance
+      room.gameState.chat.push({ 
+          id: uuidv4(), 
+          sender: "System", 
+          message: "Village has 3 successes! Cult must identify the Seer to win.", 
+          timestamp: Date.now(), 
+          isSystem: true 
+      });
+    } else {
+      // Next Round
+      room.gameState.round++;
+      room.gameState.phase = "team_selection";
+      
+      // Rotate Leader
+      const currentLeaderIdx = room.players.findIndex(p => p.id === room.gameState.leaderId);
+      const nextLeaderIdx = (currentLeaderIdx + 1) % room.players.length;
+      room.gameState.leaderId = room.players[nextLeaderIdx].id;
+    }
   }
 
   async guessSeer(code: string, seerId: string): Promise<boolean> {
