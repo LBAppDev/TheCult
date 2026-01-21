@@ -126,7 +126,8 @@ class MemStorage implements IStorage {
       // Force end voting: missing votes become "Success" (Villager-favored fallback)
       const members = room.gameState.currentTeam;
       for (const mid of members) {
-        if (room.questVotes[mid] === undefined) {
+        if (!room.questVotes || room.questVotes[mid] === undefined) {
+          if (!room.questVotes) (room as any).questVotes = {};
           room.questVotes[mid] = true; 
         }
       }
@@ -179,6 +180,8 @@ class MemStorage implements IStorage {
     if (playerCount >= 5) numCultists = 2;
     if (playerCount >= 7) numCultists = 3;
     if (playerCount >= 10) numCultists = 4;
+
+    room.gameState.cultistCount = numCultists;
 
     const shuffled = [...room.players].sort(() => 0.5 - Math.random());
     
@@ -293,6 +296,7 @@ class MemStorage implements IStorage {
     if (room.gameState.phase !== "quest_voting") return false;
     if (!room.gameState.currentTeam.includes(playerId)) return false;
 
+    if (!room.questVotes) (room as any).questVotes = {};
     room.questVotes[playerId] = vote;
 
     // Check if all voted

@@ -159,6 +159,21 @@ export default function GameRoom() {
             <div className="text-center space-y-2">
               <h2 className="text-3xl font-display text-white">Gathering Cultists...</h2>
               <p className="text-muted-foreground">Waiting for the host to start the ritual.</p>
+              
+              <div className="flex justify-center gap-4 mt-4">
+                <span className="text-sm bg-secondary/50 px-3 py-1 rounded-full text-muted-foreground border border-white/5">
+                  4-10 Players
+                </span>
+                <span className="text-sm bg-red-500/10 px-3 py-1 rounded-full text-red-400 border border-red-500/20">
+                  {(() => {
+                    const count = gameState.players.length;
+                    if (count < 5) return 1;
+                    if (count < 7) return 2;
+                    if (count < 10) return 3;
+                    return 4;
+                  })()} Cultists
+                </span>
+              </div>
             </div>
             
             <div className="bg-card border border-white/5 rounded-2xl p-6">

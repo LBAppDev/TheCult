@@ -1,5 +1,5 @@
 import { GameState } from "@shared/schema";
-import { CheckCircle2, XCircle } from "lucide-react";
+import { CheckCircle2, XCircle, Skull, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface GameStatusBoardProps {
@@ -27,6 +27,17 @@ export function GameStatusBoard({ gameState }: GameStatusBoardProps) {
            <div className="flex flex-col items-center">
               <span className="text-red-500 font-bold">{gameState.failedQuests}</span>
               <span className="text-[10px] text-muted-foreground">FAIL</span>
+           </div>
+           <div className="flex flex-col items-center border-l border-white/10 pl-4">
+              <span className="text-orange-400 font-bold">{gameState.teamRefusals}/3</span>
+              <span className="text-[10px] text-muted-foreground">REFUSALS</span>
+           </div>
+           <div className="flex flex-col items-center border-l border-white/10 pl-4">
+              <span className="text-red-400 font-bold flex items-center gap-1">
+                <Skull className="w-3 h-3" />
+                {gameState.cultistCount}
+              </span>
+              <span className="text-[10px] text-muted-foreground">CULTISTS</span>
            </div>
         </div>
       </div>

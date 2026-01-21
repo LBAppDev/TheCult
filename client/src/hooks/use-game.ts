@@ -6,6 +6,7 @@ import {
   type JoinRoomSchema, 
   type SelectTeamSchema, 
   type CastQuestVoteSchema, 
+  type CastTeamVoteSchema,
   type GuessSeerSchema,
   type SendChatSchema 
 } from "@shared/schema";
@@ -112,6 +113,22 @@ export function useVoteQuest() {
       });
       if (!res.ok) throw new Error("Failed to vote");
       return api.rooms.voteQuest.responses[200].parse(await res.json());
+    }
+  });
+}
+
+export function useVoteTeam() {
+  return useMutation({
+    mutationFn: async ({ code, vote }: { code: string } & z.infer<typeof CastTeamVoteSchema>) => {
+      const playerId = getStoredPlayerId();
+      const url = buildUrl(api.rooms.voteTeam.path, { code }) + `?playerId=${playerId}`;
+      const res = await fetch(url, {
+        method: api.rooms.voteTeam.method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ vote }),
+      });
+      if (!res.ok) throw new Error("Failed to vote");
+      return api.rooms.voteTeam.responses[200].parse(await res.json());
     }
   });
 }

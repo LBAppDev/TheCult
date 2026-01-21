@@ -46,6 +46,7 @@ export const GameState = z.object({
   failedQuests: z.number(),
   succeededQuests: z.number(),
   teamRefusals: z.number().default(0), // Count of refused teams in current round
+  cultistCount: z.number().default(0), // Number of cultists in the game
   winner: z.enum(["Village", "Cult"]).optional(),
   chat: z.array(ChatMessage),
   phaseEndTime: z.number().optional(), // Timestamp when phase ends

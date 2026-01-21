@@ -5,6 +5,7 @@ import {
   JoinRoomSchema, 
   SelectTeamSchema, 
   CastQuestVoteSchema, 
+  CastTeamVoteSchema,
   GuessSeerSchema,
   SendChatSchema
 } from "./schema";
@@ -78,6 +79,16 @@ export const api = {
       responses: { 
         200: z.object({ success: z.boolean() }),
         400: errorSchemas.validation
+      }
+    },
+    voteTeam: {
+      method: "POST" as const,
+      path: "/api/rooms/:code/vote-team",
+      input: CastTeamVoteSchema,
+      responses: {
+        200: z.object({ success: z.boolean() }),
+        400: errorSchemas.validation,
+        403: errorSchemas.internal
       }
     },
     voteTeam: {
