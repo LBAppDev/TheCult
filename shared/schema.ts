@@ -7,6 +7,7 @@ export type PlayerRole = z.infer<typeof PlayerRole>;
 export const GamePhase = z.enum([
   "lobby",
   "team_selection",
+  "team_voting",
   "quest_voting",
   "quest_result",
   "game_end",
@@ -44,6 +45,7 @@ export const GameState = z.object({
   questResults: z.array(z.boolean()), // true=Success, false=Fail
   failedQuests: z.number(),
   succeededQuests: z.number(),
+  teamRefusals: z.number().default(0), // Count of refused teams in current round
   winner: z.enum(["Village", "Cult"]).optional(),
   chat: z.array(ChatMessage),
   phaseEndTime: z.number().optional(), // Timestamp when phase ends
@@ -52,6 +54,7 @@ export const GameState = z.object({
       failVotes: z.number(),
       successVotes: z.number()
   }).optional().nullable(),
+  teamVotes: z.record(z.boolean()).optional(), // PlayerId -> Vote for current team proposal
 });
 export type GameState = z.infer<typeof GameState>;
 
@@ -60,5 +63,6 @@ export const CreateRoomSchema = z.object({ name: z.string() });
 export const JoinRoomSchema = z.object({ name: z.string(), code: z.string() });
 export const SelectTeamSchema = z.object({ playerIds: z.array(z.string()) });
 export const CastQuestVoteSchema = z.object({ vote: z.boolean() }); // true=Success, false=Fail
+export const CastTeamVoteSchema = z.object({ vote: z.boolean() }); // true=Approve, false=Reject
 export const GuessSeerSchema = z.object({ seerId: z.string() });
 export const SendChatSchema = z.object({ message: z.string() });

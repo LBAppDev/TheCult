@@ -69,12 +69,24 @@ export async function registerRoutes(
 
   app.post(api.rooms.voteQuest.path, async (req, res) => {
     const code = req.params.code.toUpperCase();
+    const playerId = req.query.playerId as string;
     try {
-      const input = api.rooms.voteQuest.input.parse(req.body);
-      const playerId = req.query.playerId as string;
-      
-      const success = await storage.voteQuest(code, playerId, input.vote);
-      if (!success) return res.status(400).json({ message: "Invalid vote" });
+      const { vote } = req.body;
+      const success = await storage.voteQuest(code, playerId, vote);
+      if (!success) return res.status(400).json({ message: "Could not cast vote" });
+      res.json({ success: true });
+    } catch (e) {
+      res.status(400).json({ message: "Invalid input" });
+    }
+  });
+
+  app.post(api.rooms.voteTeam.path, async (req, res) => {
+    const code = req.params.code.toUpperCase();
+    const playerId = req.query.playerId as string;
+    try {
+      const { vote } = req.body;
+      const success = await storage.voteTeam(code, playerId, vote);
+      if (!success) return res.status(400).json({ message: "Could not cast team vote" });
       res.json({ success: true });
     } catch (e) {
       res.status(400).json({ message: "Invalid input" });

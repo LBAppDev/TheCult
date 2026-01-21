@@ -9,7 +9,8 @@ import {
   useGuessSeer, 
   useSendChat,
   useKickPlayer,
-  useLeaveRoom
+  useLeaveRoom,
+  useVoteTeam
 } from "@/hooks/use-game";
 import { PlayerList } from "@/components/PlayerList";
 import { GameStatusBoard } from "@/components/GameStatusBoard";
@@ -39,6 +40,7 @@ export default function GameRoom() {
   const sendChat = useSendChat();
   const kickPlayer = useKickPlayer();
   const leaveRoom = useLeaveRoom();
+  const voteTeam = useVoteTeam();
 
   // Local State
   const [isRoleRevealed, setIsRoleRevealed] = useState(false);
@@ -67,6 +69,10 @@ export default function GameRoom() {
 
   const handleVote = (vote: boolean) => {
     voteQuest.mutate({ code, vote });
+  };
+
+  const handleVoteTeam = (vote: boolean) => {
+    voteTeam.mutate({ code, vote });
   };
 
   const handleGuessSeer = () => {
@@ -266,10 +272,55 @@ export default function GameRoom() {
                            disabled={selectedTeam.length === 0 || selectTeam.isPending}
                          >
                            {selectTeam.isPending && <Loader2 className="animate-spin mr-2" />}
-                           Confirm Team
+                           Propose Team
                          </Button>
                       </div>
                     )}
+                  </motion.div>
+                )}
+
+                {/* Team Voting */}
+                {gameState.phase === "team_voting" && (
+                  <motion.div 
+                    key="team-voting"
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="text-center py-8"
+                  >
+                    <div className="space-y-6">
+                      <h3 className="text-2xl font-display font-bold text-white mb-2">Approve the Team?</h3>
+                      <p className="text-muted-foreground mb-6">
+                        Refusals: <span className="text-red-400 font-bold">{gameState.teamRefusals}/3</span>
+                      </p>
+                      
+                      <div className="flex justify-center gap-4 mb-8">
+                        {gameState.players.filter(p => gameState.currentTeam.includes(p.id)).map(p => (
+                          <div key={p.id} className="px-3 py-1 bg-primary/20 rounded-full border border-primary/30 text-primary font-bold">
+                            {p.name}
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className="flex justify-center gap-6">
+                        <Button 
+                          variant="outline" 
+                          className="w-32 h-16 rounded-xl border-2 border-green-500/30 hover:bg-green-500/10 hover:border-green-500 flex flex-col gap-1"
+                          onClick={() => handleVoteTeam(true)}
+                          disabled={voteTeam.isPending}
+                        >
+                          <span className="font-bold text-green-500">APPROVE</span>
+                        </Button>
+                        
+                        <Button 
+                          variant="outline" 
+                          className="w-32 h-16 rounded-xl border-2 border-red-500/30 hover:bg-red-500/10 hover:border-red-500 flex flex-col gap-1"
+                          onClick={() => handleVoteTeam(false)}
+                          disabled={voteTeam.isPending}
+                        >
+                          <span className="font-bold text-red-500">REJECT</span>
+                        </Button>
+                      </div>
+                    </div>
                   </motion.div>
                 )}
 

@@ -10,6 +10,7 @@ export interface IStorage {
   startGame(code: string): Promise<boolean>;
   selectTeam(code: string, playerIds: string[]): Promise<boolean>;
   voteQuest(code: string, playerId: string, vote: boolean): Promise<boolean>;
+  voteTeam(code: string, playerId: string, vote: boolean): Promise<boolean>;
   guessSeer(code: string, seerId: string): Promise<boolean>;
   addChatMessage(code: string, sender: string, message: string): Promise<boolean>;
   kickPlayer(code: string, hostId: string, targetId: string): Promise<boolean>;
@@ -170,6 +171,8 @@ class MemStorage implements IStorage {
     room.gameState.currentTeam = [];
     room.gameState.lastQuestResult = null;
     room.gameState.winner = undefined;
+    room.gameState.teamRefusals = 0;
+    room.gameState.teamVotes = {};
     room.questVotes = {};
 
     let numCultists = 1;
@@ -223,17 +226,63 @@ class MemStorage implements IStorage {
     if (playerIds.length !== requiredSize) return false;
     
     room.gameState.currentTeam = playerIds;
-    room.gameState.phase = "quest_voting";
-    room.gameState.phaseEndTime = Date.now() + 15000; // 15 seconds from now
-    room.questVotes = {}; // Reset votes
+    room.gameState.phase = "team_voting";
+    room.gameState.teamVotes = {}; 
     room.gameState.chat.push({ 
       id: uuidv4(), 
       sender: "System", 
-      message: `Team selected! (${requiredSize} members needed). Cast your votes.`, 
+      message: `Team proposed! Everyone must vote to approve or reject.`, 
       timestamp: Date.now(), 
       isSystem: true 
     });
 
+    return true;
+  }
+
+  async voteTeam(code: string, playerId: string, vote: boolean): Promise<boolean> {
+    const room = this.rooms.get(code);
+    if (!room) return false;
+
+    if (room.gameState.phase !== "team_voting") return false;
+    
+    room.gameState.teamVotes = room.gameState.teamVotes || {};
+    room.gameState.teamVotes[playerId] = vote;
+
+    // Check if all voted
+    const votesCast = Object.keys(room.gameState.teamVotes).length;
+    if (votesCast >= room.players.length) {
+      const votes = Object.values(room.gameState.teamVotes);
+      const approveVotes = votes.filter(v => v).length;
+      const approved = approveVotes > votes.length / 2;
+
+      room.gameState.teamVotes = {}; // Clear for next time
+
+      if (approved) {
+        room.gameState.phase = "quest_voting";
+        room.gameState.phaseEndTime = Date.now() + 15000;
+        room.gameState.teamRefusals = 0; // Reset refusals on success
+        room.questVotes = {};
+        room.gameState.chat.push({ id: uuidv4(), sender: "System", message: "Team approved! Quest begins.", timestamp: Date.now(), isSystem: true });
+      } else {
+        room.gameState.teamRefusals++;
+        room.gameState.chat.push({ id: uuidv4(), sender: "System", message: `Team rejected! (${room.gameState.teamRefusals}/3 refusals)`, timestamp: Date.now(), isSystem: true });
+
+        if (room.gameState.teamRefusals >= 3) {
+          // 3rd refusal = Cult victory or special rule? Resistance usually says 5th refusal = Spy win.
+          // User said "they can only refuse 3 team in total each game". 
+          // If we reach 3, let's say Cult wins the round or game.
+          room.gameState.winner = "Cult";
+          room.gameState.phase = "game_end";
+          room.gameState.chat.push({ id: uuidv4(), sender: "System", message: "Too many team refusals. Cult wins!", timestamp: Date.now(), isSystem: true });
+        } else {
+          // Next Leader
+          room.gameState.phase = "team_selection";
+          const currentLeaderIdx = room.players.findIndex(p => p.id === room.gameState.leaderId);
+          const nextLeaderIdx = (currentLeaderIdx + 1) % room.players.length;
+          room.gameState.leaderId = room.players[nextLeaderIdx].id;
+        }
+      }
+    }
     return true;
   }
 
