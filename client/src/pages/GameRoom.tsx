@@ -192,6 +192,17 @@ export default function GameRoom() {
             {/* Status Board */}
             <GameStatusBoard gameState={gameState} />
 
+            <div className="bg-card border border-white/5 rounded-2xl p-6">
+              <h3 className="text-sm font-bold uppercase text-muted-foreground mb-4">Players ({gameState.players.length})</h3>
+              <PlayerList 
+                players={gameState.players} 
+                currentPlayerId={playerId}
+                leaderId={gameState.leaderId}
+                canKick={isHost}
+                onKick={handleKick}
+              />
+            </div>
+
             {/* Role Card (Top priority) */}
             <RoleCard 
               role={me?.role as PlayerRole} 

@@ -344,13 +344,16 @@ class MemStorage implements IStorage {
 
     const host = room.players.find(p => p.id === hostId);
     if (!host || !host.isHost) return false;
-    if (room.gameState.phase !== "lobby") return false;
 
     const targetIdx = room.players.findIndex(p => p.id === targetId);
     if (targetIdx === -1) return false;
 
     const target = room.players[targetIdx];
     room.players.splice(targetIdx, 1);
+    
+    // Update the gameState.players array to match
+    room.gameState.players = room.gameState.players.filter(p => p.id !== targetId);
+
     room.gameState.chat.push({
       id: uuidv4(),
       sender: "System",
@@ -358,6 +361,32 @@ class MemStorage implements IStorage {
       timestamp: Date.now(),
       isSystem: true
     });
+
+    // If game was active, we might need to handle the fallout
+    if (room.gameState.phase !== "lobby") {
+       // If a player is kicked mid-game, it might break logic (e.g. team sizes)
+       // Simplest fix: End the game or just let it continue if possible.
+       // For now, let's just make sure the player is gone.
+       
+       // Handle leader rotation if leader was kicked
+       if (room.gameState.leaderId === targetId && room.players.length > 0) {
+          const nextLeaderIdx = 0; // Just pick first one for now
+          room.gameState.leaderId = room.players[nextLeaderIdx].id;
+       }
+       
+       // Check win conditions if too many people left
+       if (room.players.length < 4) {
+          room.gameState.phase = "game_end";
+          room.gameState.winner = "Village"; // Default or just end it
+          room.gameState.chat.push({ 
+            id: uuidv4(), 
+            sender: "System", 
+            message: "Not enough players to continue. Game ended.", 
+            timestamp: Date.now(), 
+            isSystem: true 
+          });
+       }
+    }
 
     return true;
   }
