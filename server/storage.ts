@@ -146,9 +146,10 @@ class MemStorage implements IStorage {
           }
         }
         // Use the same logic as the end of voteTeam
-        const votes = Object.values(room.gameState.teamVotes);
+        const votes = Object.values(room.gameState.teamVotes || {});
         const approveVotes = votes.filter(v => v).length;
-        const approved = approveVotes > votes.length / 2;
+        const approveCount = votes.length;
+        const approved = approveCount > 0 && approveVotes > approveCount / 2;
 
         room.gameState.teamVotes = {};
         if (approved) {
