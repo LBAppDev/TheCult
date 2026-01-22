@@ -316,25 +316,34 @@ export default function GameRoom() {
                         ))}
                       </div>
 
-                      <div className="flex justify-center gap-6">
-                        <Button 
-                          variant="outline" 
-                          className="w-32 h-16 rounded-xl border-2 border-green-500/30 hover:bg-green-500/10 hover:border-green-500 flex flex-col gap-1"
-                          onClick={() => handleVoteTeam(true)}
-                          disabled={voteTeam.isPending}
-                        >
-                          <span className="font-bold text-green-500">APPROVE</span>
-                        </Button>
-                        
-                        <Button 
-                          variant="outline" 
-                          className="w-32 h-16 rounded-xl border-2 border-red-500/30 hover:bg-red-500/10 hover:border-red-500 flex flex-col gap-1"
-                          onClick={() => handleVoteTeam(false)}
-                          disabled={voteTeam.isPending}
-                        >
-                          <span className="font-bold text-red-500">REJECT</span>
-                        </Button>
-                      </div>
+                      {gameState.teamVotes?.[playerId] !== undefined ? (
+                        <div className="flex flex-col items-center gap-4 animate-pulse">
+                          <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center border border-primary/30">
+                            <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                          </div>
+                          <p className="text-lg font-medium text-white">Voted! Waiting for others...</p>
+                        </div>
+                      ) : (
+                        <div className="flex justify-center gap-6">
+                          <Button 
+                            variant="outline" 
+                            className="w-32 h-16 rounded-xl border-2 border-green-500/30 hover:bg-green-500/10 hover:border-green-500 flex flex-col gap-1"
+                            onClick={() => handleVoteTeam(true)}
+                            disabled={voteTeam.isPending}
+                          >
+                            <span className="font-bold text-green-500">APPROVE</span>
+                          </Button>
+                          
+                          <Button 
+                            variant="outline" 
+                            className="w-32 h-16 rounded-xl border-2 border-red-500/30 hover:bg-red-500/10 hover:border-red-500 flex flex-col gap-1"
+                            onClick={() => handleVoteTeam(false)}
+                            disabled={voteTeam.isPending}
+                          >
+                            <span className="font-bold text-red-500">REJECT</span>
+                          </Button>
+                        </div>
+                      )}
                     </div>
                   </motion.div>
                 )}
@@ -357,31 +366,40 @@ export default function GameRoom() {
                       );
                     })()}
                     {gameState.currentTeam.includes(playerId) ? (
-                      <div className="space-y-6">
-                        <h3 className="text-2xl font-display font-bold text-white mb-2">Perform the Ritual</h3>
-                        <p className="text-muted-foreground mb-6">Choose wisely. Your loyalty determines the outcome.</p>
-                        <div className="flex justify-center gap-6">
-                          <Button 
-                            variant="outline" 
-                            className="w-32 h-32 rounded-2xl border-2 border-green-500/30 hover:bg-green-500/10 hover:border-green-500 flex flex-col gap-2"
-                            onClick={() => handleVote(true)}
-                            disabled={voteQuest.isPending}
-                          >
-                            <Trophy className="w-10 h-10 text-green-500" />
-                            <span className="font-bold text-green-500">SUCCEED</span>
-                          </Button>
-                          
-                          <Button 
-                            variant="outline" 
-                            className="w-32 h-32 rounded-2xl border-2 border-red-500/30 hover:bg-red-500/10 hover:border-red-500 flex flex-col gap-2"
-                            onClick={() => handleVote(false)}
-                            disabled={voteQuest.isPending}
-                          >
-                            <Skull className="w-10 h-10 text-red-500" />
-                            <span className="font-bold text-red-500">FAIL</span>
-                          </Button>
+                      gameState.questVotes && (gameState as any).questVotes[playerId] !== undefined ? (
+                        <div className="flex flex-col items-center gap-4 animate-pulse">
+                          <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center border border-primary/30">
+                            <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                          </div>
+                          <p className="text-lg font-medium text-white">Loyalty proven. Waiting for others...</p>
                         </div>
-                      </div>
+                      ) : (
+                        <div className="space-y-6">
+                          <h3 className="text-2xl font-display font-bold text-white mb-2">Perform the Ritual</h3>
+                          <p className="text-muted-foreground mb-6">Choose wisely. Your loyalty determines the outcome.</p>
+                          <div className="flex justify-center gap-6">
+                            <Button 
+                              variant="outline" 
+                              className="w-32 h-32 rounded-2xl border-2 border-green-500/30 hover:bg-green-500/10 hover:border-green-500 flex flex-col gap-2"
+                              onClick={() => handleVote(true)}
+                              disabled={voteQuest.isPending}
+                            >
+                              <Trophy className="w-10 h-10 text-green-500" />
+                              <span className="font-bold text-green-500">SUCCEED</span>
+                            </Button>
+                            
+                            <Button 
+                              variant="outline" 
+                              className="w-32 h-32 rounded-2xl border-2 border-red-500/30 hover:bg-red-500/10 hover:border-red-500 flex flex-col gap-2"
+                              onClick={() => handleVote(false)}
+                              disabled={voteQuest.isPending}
+                            >
+                              <Skull className="w-10 h-10 text-red-500" />
+                              <span className="font-bold text-red-500">FAIL</span>
+                            </Button>
+                          </div>
+                        </div>
+                      )
                     ) : (
                       <div className="flex flex-col items-center gap-4 opacity-70">
                         <Loader2 className="w-10 h-10 animate-spin text-primary" />
