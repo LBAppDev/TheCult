@@ -314,7 +314,7 @@ export default function GameRoom() {
                     <div className="space-y-6">
                       <h3 className="text-2xl font-display font-bold text-white mb-2">Approve the Team?</h3>
                       <p className="text-muted-foreground mb-6">
-                        Refusals: <span className="text-red-400 font-bold">{gameState.teamRefusals}/3</span>
+                        Refusals: <span className="text-red-400 font-bold">{gameState.teamRefusals}/5</span>
                       </p>
                       
                       <div className="flex justify-center gap-4 mb-8">

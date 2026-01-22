@@ -71,6 +71,21 @@ export function PlayerList({
                   {player.avatar === "monkey" && "🐵"}
                   {player.avatar === "girafe" && "🦒"}
                   {player.avatar === "kwala" && "🐨"}
+                  {player.avatar === "elephant" && "🐘"}
+                  {player.avatar === "lion" && "🦁"}
+                  {player.avatar === "tiger" && "🐯"}
+                  {player.avatar === "bear" && "🐻"}
+                  {player.avatar === "panda" && "🐼"}
+                  {player.avatar === "rabbit" && "🐰"}
+                  {player.avatar === "fox" && "🦊"}
+                  {player.avatar === "wolf" && "🐺"}
+                  {player.avatar === "frog" && "🐸"}
+                  {player.avatar === "pig" && "🐷"}
+                  {player.avatar === "chicken" && "🐔"}
+                  {player.avatar === "penguin" && "🐧"}
+                  {player.avatar === "owl" && "🦉"}
+                  {player.avatar === "octopus" && "🐙"}
+                  {player.avatar === "whale" && "🐋"}
                 </span>
               ) : (
                 <span className="text-muted-foreground">

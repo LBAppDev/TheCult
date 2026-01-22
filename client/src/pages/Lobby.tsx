@@ -20,7 +20,22 @@ const AVATAR_MAP: Record<string, string> = {
   snake: "🐍",
   monkey: "🐵",
   girafe: "🦒",
-  kwala: "🐨"
+  kwala: "🐨",
+  elephant: "🐘",
+  lion: "🦁",
+  tiger: "🐯",
+  bear: "🐻",
+  panda: "🐼",
+  rabbit: "🐰",
+  fox: "🦊",
+  wolf: "🐺",
+  frog: "🐸",
+  pig: "🐷",
+  chicken: "🐔",
+  penguin: "🐧",
+  owl: "🦉",
+  octopus: "🐙",
+  whale: "🐋"
 };
 
 export default function Lobby() {

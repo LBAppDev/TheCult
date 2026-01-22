@@ -160,8 +160,8 @@ class MemStorage implements IStorage {
           room.gameState.chat.push({ id: uuidv4(), sender: "System", message: "Team approved by timeout! Quest begins.", timestamp: Date.now(), isSystem: true });
         } else {
           room.gameState.teamRefusals++;
-          room.gameState.chat.push({ id: uuidv4(), sender: "System", message: `Team rejected by timeout! (${room.gameState.teamRefusals}/3 refusals)`, timestamp: Date.now(), isSystem: true });
-          if (room.gameState.teamRefusals >= 3) {
+          room.gameState.chat.push({ id: uuidv4(), sender: "System", message: `Team rejected by timeout! (${room.gameState.teamRefusals}/5 refusals)`, timestamp: Date.now(), isSystem: true });
+          if (room.gameState.teamRefusals >= 5) {
             room.gameState.winner = "Cult";
             room.gameState.phase = "game_end";
           } else {
@@ -307,12 +307,10 @@ class MemStorage implements IStorage {
         room.gameState.chat.push({ id: uuidv4(), sender: "System", message: "Team approved! Quest begins.", timestamp: Date.now(), isSystem: true });
       } else {
         room.gameState.teamRefusals++;
-        room.gameState.chat.push({ id: uuidv4(), sender: "System", message: `Team rejected! (${room.gameState.teamRefusals}/3 refusals)`, timestamp: Date.now(), isSystem: true });
+          room.gameState.chat.push({ id: uuidv4(), sender: "System", message: `Team rejected! (${room.gameState.teamRefusals}/5 refusals)`, timestamp: Date.now(), isSystem: true });
 
-        if (room.gameState.teamRefusals >= 3) {
-          // 3rd refusal = Cult victory or special rule? Resistance usually says 5th refusal = Spy win.
-          // User said "they can only refuse 3 team in total each game". 
-          // If we reach 3, let's say Cult wins the round or game.
+        if (room.gameState.teamRefusals >= 5) {
+          // 5th refusal = Cult victory
           room.gameState.winner = "Cult";
           room.gameState.phase = "game_end";
           room.gameState.chat.push({ id: uuidv4(), sender: "System", message: "Too many team refusals. Cult wins!", timestamp: Date.now(), isSystem: true });

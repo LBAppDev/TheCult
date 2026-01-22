@@ -29,7 +29,7 @@ export function GameStatusBoard({ gameState }: GameStatusBoardProps) {
               <span className="text-[10px] text-muted-foreground">FAIL</span>
            </div>
            <div className="flex flex-col items-center border-l border-white/10 pl-4">
-              <span className="text-orange-400 font-bold">{gameState.teamRefusals}/3</span>
+              <span className="text-orange-400 font-bold">{gameState.teamRefusals}/5</span>
               <span className="text-[10px] text-muted-foreground">REFUSALS</span>
            </div>
            <div className="flex flex-col items-center border-l border-white/10 pl-4">
