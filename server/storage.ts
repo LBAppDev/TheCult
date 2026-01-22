@@ -58,15 +58,16 @@ class MemStorage implements IStorage {
     return Math.random().toString(36).substring(2, 6).toUpperCase();
   }
 
-  async createRoom(hostName: string): Promise<{ code: string, playerId: string }> {
+  async createRoom(playerName: string, avatar?: string): Promise<{ code: string, playerId: string }> {
     const code = this.generateCode();
     const playerId = uuidv4();
     const host: Player & { role: PlayerRole | undefined } = {
       id: playerId,
-      name: hostName,
+      name: playerName,
       isHost: true,
       role: undefined,
-      isDead: false
+      isDead: false,
+      avatar
     };
 
     this.rooms.set(code, {
@@ -81,7 +82,9 @@ class MemStorage implements IStorage {
         failedQuests: 0,
         succeededQuests: 0,
         chat: [{ id: uuidv4(), sender: "System", message: `Room ${code} created.`, timestamp: Date.now(), isSystem: true }],
-        lastQuestResult: null
+        lastQuestResult: null,
+        teamRefusals: 0,
+        cultistCount: 0
       },
       players: [host],
       questVotes: {}
@@ -90,7 +93,7 @@ class MemStorage implements IStorage {
     return { code, playerId };
   }
 
-  async joinRoom(code: string, playerName: string): Promise<{ code: string, playerId: string }> {
+  async joinRoom(code: string, playerName: string, avatar?: string): Promise<{ code: string, playerId: string }> {
     const room = this.rooms.get(code);
     if (!room) throw new Error("Room not found");
     
@@ -102,7 +105,8 @@ class MemStorage implements IStorage {
       name: playerName,
       isHost: false,
       role: undefined,
-      isDead: false
+      isDead: false,
+      avatar
     };
 
     room.players.push(player);

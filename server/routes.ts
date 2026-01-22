@@ -16,7 +16,7 @@ export async function registerRoutes(
   app.post(api.rooms.create.path, async (req, res) => {
     try {
       const input = api.rooms.create.input.parse(req.body);
-      const result = await storage.createRoom(input.name);
+      const result = await storage.createRoom(input.name, input.avatar);
       res.json(result);
     } catch (e) {
       res.status(400).json({ message: "Invalid input" });
@@ -26,10 +26,11 @@ export async function registerRoutes(
   app.post(api.rooms.join.path, async (req, res) => {
     try {
       const input = api.rooms.join.input.parse(req.body);
-      const result = await storage.joinRoom(input.code, input.name);
+      const result = await storage.joinRoom(input.code.toUpperCase(), input.name, input.avatar);
       res.json(result);
     } catch (e) {
-      res.status(400).json({ message: "Could not join room" });
+      const message = e instanceof Error ? e.message : "Could not join room";
+      res.status(e instanceof Error && e.message === "Room not found" ? 404 : 400).json({ message });
     }
   });
 

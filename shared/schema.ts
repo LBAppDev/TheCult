@@ -16,12 +16,18 @@ export const GamePhase = z.enum([
 export type GamePhase = z.infer<typeof GamePhase>;
 
 // --- Sub-Objects ---
+export const AVATARS = [
+  "cow", "bird", "goat", "donkey", "cat", 
+  "dog", "snake", "monkey", "girafe", "kwala"
+] as const;
+
 export const Player = z.object({
   id: z.string(),
   name: z.string(),
   isHost: z.boolean(),
   role: PlayerRole.optional(), // Hidden from client mostly
   isDead: z.boolean().default(false), // For compatibility/extensions
+  avatar: z.string().optional(),
 });
 export type Player = z.infer<typeof Player>;
 
@@ -60,8 +66,8 @@ export const GameState = z.object({
 export type GameState = z.infer<typeof GameState>;
 
 // --- API IO Schemas ---
-export const CreateRoomSchema = z.object({ name: z.string() });
-export const JoinRoomSchema = z.object({ name: z.string(), code: z.string() });
+export const CreateRoomSchema = z.object({ name: z.string(), avatar: z.string().optional() });
+export const JoinRoomSchema = z.object({ name: z.string(), code: z.string(), avatar: z.string().optional() });
 export const SelectTeamSchema = z.object({ playerIds: z.array(z.string()) });
 export const CastQuestVoteSchema = z.object({ vote: z.boolean() }); // true=Success, false=Fail
 export const CastTeamVoteSchema = z.object({ vote: z.boolean() }); // true=Approve, false=Reject

@@ -55,10 +55,28 @@ export function PlayerList({
             )}
           >
             <div className={cn(
-              "w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg font-display",
-              isSelected ? "bg-primary text-white" : "bg-background border border-white/10 text-muted-foreground"
+              "w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg font-display overflow-hidden bg-background border border-white/10",
+              isSelected && "ring-2 ring-primary ring-offset-2 ring-offset-background"
             )}>
-              {player.name.charAt(0).toUpperCase()}
+              {player.avatar ? (
+                <span className="text-xl" title={player.avatar}>
+                  {/* Map avatar names to simple visual representation or just text for now */}
+                  {player.avatar === "cow" && "🐄"}
+                  {player.avatar === "bird" && "🐦"}
+                  {player.avatar === "goat" && "🐐"}
+                  {player.avatar === "donkey" && "🫏"}
+                  {player.avatar === "cat" && "🐱"}
+                  {player.avatar === "dog" && "🐶"}
+                  {player.avatar === "snake" && "🐍"}
+                  {player.avatar === "monkey" && "🐵"}
+                  {player.avatar === "girafe" && "🦒"}
+                  {player.avatar === "kwala" && "🐨"}
+                </span>
+              ) : (
+                <span className="text-muted-foreground">
+                  {player.name.charAt(0).toUpperCase()}
+                </span>
+              )}
             </div>
             
             <div className="flex-1 min-w-0">
