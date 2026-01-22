@@ -366,7 +366,7 @@ export default function GameRoom() {
                       );
                     })()}
                     {gameState.currentTeam.includes(playerId) ? (
-                      gameState.questVotes && (gameState as any).questVotes[playerId] !== undefined ? (
+                      (gameState as any).questVotes?.[playerId] !== undefined ? (
                         <div className="flex flex-col items-center gap-4 animate-pulse">
                           <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center border border-primary/30">
                             <Loader2 className="w-6 h-6 animate-spin text-primary" />
