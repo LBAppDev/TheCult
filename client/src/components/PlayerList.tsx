@@ -86,6 +86,36 @@ export function PlayerList({
                   {player.avatar === "owl" && "🦉"}
                   {player.avatar === "octopus" && "🐙"}
                   {player.avatar === "whale" && "🐋"}
+                  {player.avatar === "unicorn" && "🦄"}
+                  {player.avatar === "dragon" && "🐉"}
+                  {player.avatar === "butterfly" && "🦋"}
+                  {player.avatar === "bee" && "🐝"}
+                  {player.avatar === "scorpion" && "🦂"}
+                  {player.avatar === "cool" && "😎"}
+                  {player.avatar === "ghost" && "👻"}
+                  {player.avatar === "alien" && "👽"}
+                  {player.avatar === "robot" && "🤖"}
+                  {player.avatar === "ninja" && "🥷"}
+                  {player.avatar === "vampire" && "🧛"}
+                  {player.avatar === "wizard" && "🧙"}
+                  {player.avatar === "detective" && "🕵️"}
+                  {player.avatar === "clown" && "🤡"}
+                  {player.avatar === "angel" && "😇"}
+                  {player.avatar === "crystal" && "🔮"}
+                  {player.avatar === "potion" && "🧪"}
+                  {player.avatar === "candle" && "🕯️"}
+                  {player.avatar === "book" && "📖"}
+                  {player.avatar === "skull" && "💀"}
+                  {player.avatar === "eye" && "👁️"}
+                  {player.avatar === "moon" && "🌙"}
+                  {player.avatar === "sun" && "☀️"}
+                  {player.avatar === "star" && "⭐"}
+                  {player.avatar === "fire" && "🔥"}
+                  {player.avatar === "cloak" && "🧥"}
+                  {player.avatar === "dagger" && "🗡️"}
+                  {player.avatar === "mask" && "🎭"}
+                  {player.avatar === "ring" && "💍"}
+                  {player.avatar === "key" && "🔑"}
                 </span>
               ) : (
                 <span className="text-muted-foreground">

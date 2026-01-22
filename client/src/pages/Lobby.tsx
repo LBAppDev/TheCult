@@ -11,6 +11,7 @@ import { AVATARS } from "@shared/schema";
 import { cn } from "@/lib/utils";
 
 const AVATAR_MAP: Record<string, string> = {
+  // Animals
   cow: "🐄",
   bird: "🐦",
   goat: "🐐",
@@ -35,7 +36,39 @@ const AVATAR_MAP: Record<string, string> = {
   penguin: "🐧",
   owl: "🦉",
   octopus: "🐙",
-  whale: "🐋"
+  whale: "🐋",
+  unicorn: "🦄",
+  dragon: "🐉",
+  butterfly: "🦋",
+  bee: "🐝",
+  scorpion: "🦂",
+  // Faces
+  cool: "😎",
+  ghost: "👻",
+  alien: "👽",
+  robot: "🤖",
+  ninja: "🥷",
+  vampire: "🧛",
+  wizard: "🧙",
+  detective: "🕵️",
+  clown: "🤡",
+  angel: "😇",
+  // Objects
+  crystal: "🔮",
+  potion: "🧪",
+  candle: "🕯️",
+  book: "📖",
+  skull: "💀",
+  eye: "👁️",
+  moon: "🌙",
+  sun: "☀️",
+  star: "⭐",
+  fire: "🔥",
+  cloak: "🧥",
+  dagger: "🗡️",
+  mask: "🎭",
+  ring: "💍",
+  key: "🔑"
 };
 
 export default function Lobby() {
@@ -70,15 +103,15 @@ export default function Lobby() {
   const AvatarPicker = () => (
     <div className="space-y-3">
       <label className="text-xs uppercase font-bold text-muted-foreground">Choose Your Avatar</label>
-      <div className="grid grid-cols-5 gap-2">
+      <div className="grid grid-cols-5 sm:grid-cols-10 gap-2 max-h-[200px] overflow-y-auto p-1 scrollbar-hide">
         {AVATARS.map((avatar) => (
           <button
             key={avatar}
             onClick={() => setSelectedAvatar(avatar)}
             className={cn(
-              "h-12 w-12 rounded-xl flex items-center justify-center text-2xl transition-all relative border-2",
+              "h-10 w-10 sm:h-12 sm:w-12 rounded-xl flex items-center justify-center text-xl sm:text-2xl transition-all relative border-2 shrink-0",
               selectedAvatar === avatar 
-                ? "bg-primary/20 border-primary scale-110 shadow-[0_0_10px_rgba(233,69,96,0.3)]" 
+                ? "bg-primary/20 border-primary scale-105 shadow-[0_0_10px_rgba(233,69,96,0.3)]" 
                 : "bg-black/20 border-white/5 hover:border-white/20"
             )}
           >

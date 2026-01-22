@@ -17,11 +17,20 @@ export type GamePhase = z.infer<typeof GamePhase>;
 
 // --- Sub-Objects ---
 export const AVATARS = [
+  // Animals
   "cow", "bird", "goat", "donkey", "cat", 
   "dog", "snake", "monkey", "girafe", "kwala",
   "elephant", "lion", "tiger", "bear", "panda",
   "rabbit", "fox", "wolf", "frog", "pig",
-  "chicken", "penguin", "owl", "octopus", "whale"
+  "chicken", "penguin", "owl", "octopus", "whale",
+  "unicorn", "dragon", "butterfly", "bee", "scorpion",
+  // Faces/People
+  "cool", "ghost", "alien", "robot", "ninja",
+  "vampire", "wizard", "detective", "clown", "angel",
+  // Objects/Mysterious
+  "crystal", "potion", "candle", "book", "skull",
+  "eye", "moon", "sun", "star", "fire",
+  "cloak", "dagger", "mask", "ring", "key"
 ] as const;
 
 export const Player = z.object({
