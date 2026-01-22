@@ -302,6 +302,15 @@ export default function GameRoom() {
                     animate={{ opacity: 1, scale: 1 }}
                     className="text-center py-8"
                   >
+                    {(() => {
+                      const timeLeft = gameState.phaseEndTime ? Math.max(0, Math.ceil((gameState.phaseEndTime - Date.now()) / 1000)) : null;
+                      return timeLeft !== null && (
+                        <div className="absolute top-4 right-6 flex items-center gap-2 text-primary font-mono font-bold">
+                          <Loader2 className={cn("w-4 h-4 animate-spin", timeLeft < 5 && "text-red-500")} />
+                          <span className={cn(timeLeft < 5 && "text-red-500")}>{timeLeft}s</span>
+                        </div>
+                      );
+                    })()}
                     <div className="space-y-6">
                       <h3 className="text-2xl font-display font-bold text-white mb-2">Approve the Team?</h3>
                       <p className="text-muted-foreground mb-6">

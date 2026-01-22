@@ -126,18 +126,51 @@ class MemStorage implements IStorage {
     if (!room) return undefined;
 
     // Auto-process voting timeout
-    if (room.gameState.phase === "quest_voting" && room.gameState.phaseEndTime && Date.now() > room.gameState.phaseEndTime) {
-      // Force end voting: missing votes become "Success" (Villager-favored fallback)
-      const members = room.gameState.currentTeam;
-      for (const mid of members) {
-        if (!room.questVotes || room.questVotes[mid] === undefined) {
-          if (!room.questVotes) (room as any).questVotes = {};
-          room.questVotes[mid] = true; 
+    if (room.gameState.phaseEndTime && Date.now() > room.gameState.phaseEndTime) {
+      if (room.gameState.phase === "quest_voting") {
+        // Force end voting: missing votes become "Success" (Villager-favored fallback)
+        const members = room.gameState.currentTeam;
+        for (const mid of members) {
+          if (!room.questVotes || room.questVotes[mid] === undefined) {
+            if (!room.questVotes) (room as any).questVotes = {};
+            room.questVotes[mid] = true; 
+          }
+        }
+        await this.processQuestResult(code);
+      } else if (room.gameState.phase === "team_voting") {
+        // Force end voting: missing votes become "Approve" (Progress-favored fallback)
+        for (const p of room.players) {
+          if (!room.gameState.teamVotes || room.gameState.teamVotes[p.id] === undefined) {
+            if (!room.gameState.teamVotes) room.gameState.teamVotes = {};
+            room.gameState.teamVotes[p.id] = true;
+          }
+        }
+        // Use the same logic as the end of voteTeam
+        const votes = Object.values(room.gameState.teamVotes);
+        const approveVotes = votes.filter(v => v).length;
+        const approved = approveVotes > votes.length / 2;
+
+        room.gameState.teamVotes = {};
+        if (approved) {
+          room.gameState.phase = "quest_voting";
+          room.gameState.phaseEndTime = Date.now() + 15000;
+          room.gameState.teamRefusals = 0;
+          room.questVotes = {};
+          room.gameState.chat.push({ id: uuidv4(), sender: "System", message: "Team approved by timeout! Quest begins.", timestamp: Date.now(), isSystem: true });
+        } else {
+          room.gameState.teamRefusals++;
+          room.gameState.chat.push({ id: uuidv4(), sender: "System", message: `Team rejected by timeout! (${room.gameState.teamRefusals}/3 refusals)`, timestamp: Date.now(), isSystem: true });
+          if (room.gameState.teamRefusals >= 3) {
+            room.gameState.winner = "Cult";
+            room.gameState.phase = "game_end";
+          } else {
+            room.gameState.phase = "team_selection";
+            const currentLeaderIdx = room.players.findIndex(p => p.id === room.gameState.leaderId);
+            const nextLeaderIdx = (currentLeaderIdx + 1) % room.players.length;
+            room.gameState.leaderId = room.players[nextLeaderIdx].id;
+          }
         }
       }
-      // Process the result by calling voteQuest with an internal flag or just re-triggering logic
-      // Simplest: just run the processing logic here if all "voted"
-      await this.processQuestResult(code);
     }
 
     const viewer = room.players.find(p => p.id === playerId);
@@ -234,6 +267,7 @@ class MemStorage implements IStorage {
     
     room.gameState.currentTeam = playerIds;
     room.gameState.phase = "team_voting";
+    room.gameState.phaseEndTime = Date.now() + 15000;
     room.gameState.teamVotes = {}; 
     room.gameState.chat.push({ 
       id: uuidv4(), 
